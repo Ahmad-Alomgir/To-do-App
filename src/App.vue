@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import TodoInput from './components/TodoInput.vue'
 
 // Reactive todos array
@@ -34,6 +34,19 @@ const todos = ref([])
 
 // Reactive reference to track the index of the task being edited
 const editingIndex = ref(null)
+
+// Load the todos from localStorage when the component is mounted
+onMounted(() => {
+  const savedTodos = localStorage.getItem('todos')
+  if (savedTodos) {
+    todos.value = JSON.parse(savedTodos) // Load the saved todos
+  }
+})
+
+// Watch the todos array and save it to localStorage whenever it changes
+watch(todos, (newTodos) => {
+  localStorage.setItem('todos', JSON.stringify(newTodos))
+}, { deep: true }) // Deep watching to detect changes within the array
 
 // Add a new todo to the todos array
 const addTodo = (todoText) => {
